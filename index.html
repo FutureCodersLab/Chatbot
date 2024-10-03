@@ -1,40 +1,52 @@
 <!DOCTYPE html>
+<!-- Coding By CodingNepal - www.codingnepalweb.com -->
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Gemini Clone</title>
-        <link rel="stylesheet" href="style.css" />
+        <title>Gemini Chatbot</title>
+        <!-- Linking Google Fonts For Icons -->
         <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,100..700,1,0..200"
             rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
         />
+        <link rel="stylesheet" href="style.css" />
+        <script src="config.js"></script>
         <script src="script.js" defer></script>
     </head>
     <body>
-        <div class="chat-container"></div>
+        <header class="header">
+            <!-- Header Greetings -->
+            <h1 class="title">Hello, there</h1>
+            <p class="subtitle">How can I help you today?</p>
+        </header>
 
-        <div class="typing-container">
-            <div class="typing-content">
-                <div class="typing-textarea">
-                    <textarea
-                        name=""
-                        id="chat-input"
+        <!-- Chat List / Container -->
+        <div class="chat-list"></div>
+
+        <!-- Typing Area -->
+        <div class="typing-area">
+            <form action="#" class="typing-form">
+                <div class="input-wrapper">
+                    <input
+                        type="text"
                         placeholder="Enter a prompt here"
-                    ></textarea>
-                    <span id="send-btn" class="material-symbols-rounded"
-                        >send</span
-                    >
+                        class="typing-input"
+                        required
+                    />
+                    <button id="send-btn" class="icon material-symbols-rounded">
+                        send
+                    </button>
                 </div>
-                <div class="typing-controls">
-                    <span id="theme-btn" class="material-symbols-rounded"
+                <div class="action-buttons">
+                    <span id="theme-btn" class="icon material-symbols-rounded"
                         >light_mode</span
                     >
-                    <span id="delete-btn" class="material-symbols-rounded"
+                    <span id="delete-btn" class="icon material-symbols-rounded"
                         >delete</span
                     >
                 </div>
-            </div>
+            </form>
         </div>
     </body>
 </html>

@@ -33,7 +33,7 @@ body {
 }
 
 .header,
-.chat-list .message,
+.chat-container .message,
 .typing-form {
     margin: 0 auto;
     max-width: 980px;
@@ -73,38 +73,38 @@ body.hide-header .header {
     color: var(--subheading-color);
 }
 
-.chat-list {
+.chat-container {
     padding: 2rem 1rem 12rem;
     max-height: 100vh;
     overflow-y: auto;
     scrollbar-color: #999 transparent;
 }
 
-.chat-list .message.incoming {
+.chat-container .message.incoming {
     margin-top: 1.5rem;
 }
 
-.chat-list .message .message-content {
+.chat-container .message .message-content {
     display: flex;
     gap: 1.5rem;
     width: 100%;
     align-items: center;
 }
 
-.chat-list .message .text {
+.chat-container .message .text {
     color: var(--text-color);
     white-space: pre-wrap;
 }
 
-.chat-list .message.error .text {
+.chat-container .message.error .text {
     color: #e55865;
 }
 
-.chat-list .message.loading .text {
+.chat-container .message.loading .text {
     display: none;
 }
 
-.chat-list .message .avatar {
+.chat-container .message .avatar {
     width: 40px;
     height: 40px;
     object-fit: cover;
@@ -112,7 +112,7 @@ body.hide-header .header {
     align-self: flex-start;
 }
 
-.chat-list .message.loading .avatar {
+.chat-container .message.loading .avatar {
     animation: rotate 3s linear infinite;
 }
 
@@ -122,7 +122,7 @@ body.hide-header .header {
     }
 }
 
-.chat-list .message .icon {
+.chat-container .message .icon {
     color: var(--text-color);
     cursor: pointer;
     height: 35px;
@@ -137,30 +137,30 @@ body.hide-header .header {
     visibility: hidden;
 }
 
-.chat-list .message .icon.hide {
+.chat-container .message .icon.hide {
     visibility: hidden;
 }
 
-.chat-list .message:not(.loading, .error) .icon:not(.hide) {
+.chat-container .message:not(.loading, .error) .icon:not(.hide) {
     visibility: visible;
 }
 
-.chat-list .message .icon:hover {
+.chat-container .message .icon:hover {
     background: var(--secondary-hover-color);
 }
 
-.chat-list .message .loading-indicator {
+.chat-container .message .loading-indicator {
     display: none;
     gap: 0.8rem;
     width: 100%;
     flex-direction: column;
 }
 
-.chat-list .message.loading .loading-indicator {
+.chat-container .message.loading .loading-indicator {
     display: flex;
 }
 
-.chat-list .message .loading-indicator .loading-bar {
+.chat-container .message .loading-indicator .loading-bar {
     height: 11px;
     width: 100%;
     border-radius: 0.135rem;
@@ -174,7 +174,7 @@ body.hide-header .header {
     animation: loading 3s linear infinite;
 }
 
-.chat-list .message .loading-indicator .loading-bar:last-child {
+.chat-container .message .loading-indicator .loading-bar:last-child {
     width: 70%;
 }
 

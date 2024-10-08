@@ -1,5 +1,5 @@
 const typingForm = document.querySelector(".typing-form");
-const chatContainer = document.querySelector(".chat-list");
+const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
@@ -84,7 +84,7 @@ const generateAPIResponse = async (incomingMessageDiv) => {
 
 const showLoadingAnimation = () => {
     const html = `<div class="message-content">
-                  <img class="avatar" src="images/gemini.svg" alt="Gemini avatar">
+                  <img class="avatar" src="./images/gemini.svg" alt="Gemini avatar">
                   <p class="text"></p>
                   <div class="loading-indicator">
                     <div class="loading-bar"></div>
@@ -121,7 +121,7 @@ const handleOutgoingChat = () => {
     isResponseGenerating = true;
 
     const html = `<div class="message-content">
-                  <img class="avatar" src="images/naruto.jpg" alt="User avatar">
+                  <img class="avatar" src="./images/naruto.jpg" alt="User avatar">
                   <p class="text"></p>
                 </div>`;
 
@@ -151,9 +151,10 @@ deleteButton.addEventListener("click", () => {
     }
 });
 
-typingForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    handleOutgoingChat();
+document.addEventListener("DOMContentLoaded", function () {
+    loadDataFromLocalstorage();
+    typingForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        handleOutgoingChat();
+    });
 });
-
-loadDataFromLocalstorage();

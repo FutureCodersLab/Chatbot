@@ -1,5 +1,5 @@
 const typingForm = document.querySelector(".typing-form");
-const chatContainer = document.querySelector(".chat-list");
+const chatContainer = document.querySelector(".chat-container");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 
@@ -121,7 +121,7 @@ const handleOutgoingChat = () => {
     isResponseGenerating = true;
 
     const html = `<div class="message-content">
-                  <img class="avatar" src="images/user.jpg" alt="User avatar">
+                  <img class="avatar" src="images/naruto.jpg" alt="User avatar">
                   <p class="text"></p>
                 </div>`;
 

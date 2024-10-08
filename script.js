@@ -1,5 +1,5 @@
 const typingForm = document.querySelector(".typing-form");
-const chatContainer = document.querySelector(".chat-container");
+const chatContainer = document.querySelector(".chat-list");
 const themeButton = document.querySelector("#theme-btn");
 const deleteButton = document.querySelector("#delete-btn");
 

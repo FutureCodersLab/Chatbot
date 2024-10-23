@@ -1,3 +1,4 @@
+import { CONFIG } from "./config.js";
 import { getMessageStructure, loadingStructure } from "./structures.js";
 
 const API_KEY = CONFIG.API_KEY.join("");

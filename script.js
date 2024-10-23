@@ -1,56 +1,61 @@
-const typingForm = document.querySelector(".typing-form");
-const chatContainer = document.querySelector(".chat-container");
-const themeButton = document.querySelector("#theme-btn");
-const deleteButton = document.querySelector("#delete-btn");
-
-let userMessage = null;
-let isResponseGenerating = false;
+import { getMessageStructure, loadingStructure } from "./structures.js";
 
 const API_KEY = CONFIG.API_KEY.join("");
 const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
 
-const loadDataFromLocalstorage = () => {
-    const savedChats = localStorage.getItem("saved-chats");
-    const isLightMode = localStorage.getItem("themeColor") === "light_mode";
+let isGeneratingResponse = false;
 
-    document.body.classList.toggle("light_mode", isLightMode);
-    themeButton.innerText = isLightMode ? "dark_mode" : "light_mode";
+const form = document.querySelector("form");
+const input = document.querySelector("input");
+const header = document.querySelector("header");
+const chatContainer = document.querySelector(".chat-container");
+const scrollTarget = document.querySelector("#scroll-target");
+const modeButton = document.querySelector("#mode");
+const container = document.querySelector("#container");
+const deleteButton = document.querySelector("#delete");
 
-    chatContainer.innerHTML = savedChats || "";
-    document.body.classList.toggle("hide-header", savedChats);
+document.addEventListener("DOMContentLoaded", () => {
+    loadDataFromLocalStorage();
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = input.value.trim();
 
-    chatContainer.scrollTo(0, chatContainer.scrollHeight);
-};
+        if (!message || isGeneratingResponse) return;
 
-const createMessageElement = (content, ...classes) => {
+        sendMessage(message);
+        setTimeout(respondLoadingMessage, 500);
+        const chatbotResponse = await generateResponse(message);
+        typeChatbotResponse(chatbotResponse);
+    });
+});
+
+const sendMessage = (message) => {
+    isGeneratingResponse = true;
+
+    header.classList.add("hide");
+
     const div = document.createElement("div");
-    div.classList.add("message", ...classes);
-    div.innerHTML = content;
-    return div;
+    div.className = "message";
+    div.innerHTML = getMessageStructure(message, "./images/naruto.jpg");
+
+    chatContainer.appendChild(div);
+
+    input.value = "";
+
+    autoScroll();
 };
 
-const showTypingEffect = (text, textElement, incomingMessageDiv) => {
-    const words = text.split(" ");
-    let currentWordIndex = 0;
+const respondLoadingMessage = () => {
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = loadingStructure;
 
-    const typingInterval = setInterval(() => {
-        textElement.innerText +=
-            (currentWordIndex === 0 ? "" : " ") + words[currentWordIndex++];
-        incomingMessageDiv.querySelector(".icon").classList.add("hide");
+    chatContainer.appendChild(div);
 
-        if (currentWordIndex === words.length) {
-            clearInterval(typingInterval);
-            isResponseGenerating = false;
-            incomingMessageDiv.querySelector(".icon").classList.remove("hide");
-            localStorage.setItem("saved-chats", chatContainer.innerHTML);
-        }
-        chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    }, 75);
+    autoScroll();
 };
 
-const generateAPIResponse = async (incomingMessageDiv) => {
-    const textElement = incomingMessageDiv.querySelector(".text");
-
+const generateResponse = async (message) => {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
@@ -59,102 +64,114 @@ const generateAPIResponse = async (incomingMessageDiv) => {
                 contents: [
                     {
                         role: "user",
-                        parts: [{ text: userMessage }],
+                        parts: [{ text: message }],
                     },
                 ],
             }),
         });
-
         const data = await response.json();
         if (!response.ok) throw new Error(data.error.message);
-
-        const apiResponse = data?.candidates[0].content.parts[0].text.replace(
+        return data?.candidates[0].content.parts[0].text.replace(
             /\*\*(.*?)\*\*/g,
             "$1"
         );
-        showTypingEffect(apiResponse, textElement, incomingMessageDiv);
     } catch (error) {
-        isResponseGenerating = false;
-        textElement.innerText = error.message;
-        textElement.parentElement.closest(".message").classList.add("error");
+        isGeneratingResponse = false;
+        alert(error.message);
     } finally {
-        incomingMessageDiv.classList.remove("loading");
+        chatContainer.removeChild(chatContainer.lastChild);
     }
 };
 
-const showLoadingAnimation = () => {
-    const html = `<div class="message-content">
-                  <img class="avatar" src="./images/gemini.svg" alt="Gemini avatar">
-                  <p class="text"></p>
-                  <div class="loading-indicator">
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                    <div class="loading-bar"></div>
-                  </div>
-                </div>
-                <span onClick="copyMessage(this)" class="icon material-symbols-rounded">content_copy</span>`;
+const typeChatbotResponse = (chatbotResponse) => {
+    const words = chatbotResponse.split(" ");
 
-    const incomingMessageDiv = createMessageElement(
-        html,
-        "incoming",
-        "loading"
+    const div = document.createElement("div");
+    div.className = "message";
+    div.innerHTML = getMessageStructure("", "./images/gemini.svg", true);
+    chatContainer.appendChild(div);
+
+    const messageActions = div.querySelector(".message-actions");
+
+    const copyButton = div.querySelector(".copy");
+    copyButton.addEventListener("click", (e) =>
+        copyMessage(chatbotResponse, e.target)
     );
-    chatContainer.appendChild(incomingMessageDiv);
 
-    chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    generateAPIResponse(incomingMessageDiv);
-};
-
-const copyMessage = (copyButton) => {
-    const messageText =
-        copyButton.parentElement.querySelector(".text").innerText;
-
-    navigator.clipboard.writeText(messageText);
-    copyButton.innerText = "done";
-    setTimeout(() => (copyButton.innerText = "content_copy"), 1000);
-};
-
-const handleOutgoingChat = () => {
-    userMessage =
-        typingForm.querySelector(".typing-input").value.trim() || userMessage;
-    if (!userMessage || isResponseGenerating) return; //
-    isResponseGenerating = true;
-
-    const html = `<div class="message-content">
-                  <img class="avatar" src="./images/naruto.jpg" alt="User avatar">
-                  <p class="text"></p>
-                </div>`;
-
-    const outgoingMessageDiv = createMessageElement(html, "outgoing");
-    outgoingMessageDiv.querySelector(".text").innerText = userMessage;
-    chatContainer.appendChild(outgoingMessageDiv);
-
-    typingForm.reset();
-    document.body.classList.add("hide-header");
-    chatContainer.scrollTo(0, chatContainer.scrollHeight);
-    setTimeout(showLoadingAnimation, 500);
-};
-
-themeButton.addEventListener("click", () => {
-    const isLightMode = document.body.classList.toggle("light_mode");
-    localStorage.setItem(
-        "themeColor",
-        isLightMode ? "light_mode" : "dark_mode"
+    const volumUpButton = div.querySelector(".volume-up");
+    volumUpButton.addEventListener("click", (e) =>
+        readMessage(chatbotResponse, e.target)
     );
-    themeButton.innerText = isLightMode ? "dark_mode" : "light_mode";
+
+    const textElement = div.querySelector("span");
+
+    let currentWordIndex = 0;
+
+    const typingInterval = setInterval(() => {
+        if (currentWordIndex === 0) {
+            textElement.innerText += words[currentWordIndex];
+        } else {
+            textElement.innerText += " " + words[currentWordIndex];
+        }
+        currentWordIndex++;
+        if (currentWordIndex === words.length) {
+            clearInterval(typingInterval);
+            isGeneratingResponse = false;
+            setTimeout(() => {
+                messageActions.classList.remove("hide");
+                localStorage.setItem("chat-history", chatContainer.innerHTML);
+            }, 200);
+        }
+        autoScroll();
+    }, 75);
+};
+
+modeButton.addEventListener("click", () => {
+    const isLightMode = container.classList.toggle("light-mode");
+
+    container.classList.toggle("dark-mode", !isLightMode);
+    mode.innerText = isLightMode ? "dark_mode" : "light_mode";
+
+    localStorage.setItem("mode", isLightMode ? "light-mode" : "dark-mode");
 });
 
 deleteButton.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all the chats?")) {
-        localStorage.removeItem("saved-chats");
-        loadDataFromLocalstorage();
+    if (confirm("Are you sure you want to delete all your chats?")) {
+        localStorage.removeItem("chat-history");
+        loadDataFromLocalStorage();
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    loadDataFromLocalstorage();
-    typingForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        handleOutgoingChat();
-    });
-});
+const loadDataFromLocalStorage = () => {
+    const savedChatHistory = localStorage.getItem("chat-history");
+    const savedMode = localStorage.getItem("mode");
+
+    container.className = "";
+    container.classList.add(savedMode);
+    mode.innerText = savedMode === "light-mode" ? "dark_mode" : "light_mode";
+
+    chatContainer.innerHTML = savedChatHistory || "";
+    header.classList.toggle("hide", savedChatHistory);
+
+    autoScroll();
+};
+
+const copyMessage = (message, target) => {
+    navigator.clipboard.writeText(message);
+    target.innerText = "done";
+    setTimeout(() => (target.innerText = "content_copy"), 1500);
+};
+
+const readMessage = (message, target) => {
+    if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        target.innerText = "volume_up";
+    } else {
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.onend = () => (target.innerText = "volume_up");
+        window.speechSynthesis.speak(utterance);
+        target.innerText = "volume_off";
+    }
+};
+
+const autoScroll = () => scrollTarget.scrollIntoView({ behavior: "smooth" });

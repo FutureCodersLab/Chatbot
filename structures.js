@@ -6,16 +6,10 @@ export const getMessageStructure = (message, src, withActions) => {
             <img src="${src}" />
             <span>${message}</span>
         </div>
-        ${
-            withActions
-                ? `
-                <div class="message-actions hide">
-                    ${copyIcon}
-                    ${volumeUpIcon}
-                </div>
-            `
-                : ""
-        }
+        <div class="message-actions ${withActions ? "" : "hide"}">
+            ${copyIcon}
+            ${volumeUpIcon}
+        </div>
     `;
 };
 

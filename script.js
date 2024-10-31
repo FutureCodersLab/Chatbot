@@ -77,9 +77,9 @@ const generateResponse = async (message) => {
             "$1"
         );
     } catch (error) {
-        isGeneratingResponse = false;
         alert(error.message);
     } finally {
+        isGeneratingResponse = false;
         chatContainer.removeChild(chatContainer.lastChild);
     }
 };

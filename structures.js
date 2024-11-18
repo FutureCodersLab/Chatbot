@@ -1,12 +1,12 @@
 import { copyIcon, volumeUpIcon } from "./icons.js";
 
-export const getMessageStructure = (message, src, withActions) => {
+export const getMessageStructure = (message, src) => {
     return `
         <div class="message-content">
             <img src="${src}" />
             <span>${message}</span>
         </div>
-        <div class="message-actions ${withActions ? "" : "hide"}">
+        <div class="message-actions hide">
             ${copyIcon}
             ${volumeUpIcon}
         </div>

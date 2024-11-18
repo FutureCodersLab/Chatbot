@@ -121,6 +121,7 @@ header p {
 .message-actions.hide {
     opacity: 0;
     pointer-events: none;
+    height: 0;
 }
 
 .message .volume-up,

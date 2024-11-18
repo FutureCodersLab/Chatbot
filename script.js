@@ -2,7 +2,7 @@ import { CONFIG } from "./config.js";
 import { getMessageStructure, loadingStructure } from "./structures.js";
 
 const API_KEY = CONFIG.API_KEY.join("");
-const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 let isGeneratingResponse = false;
 
@@ -89,7 +89,7 @@ const typeChatbotResponse = (chatbotResponse) => {
 
     const div = document.createElement("div");
     div.className = "message";
-    div.innerHTML = getMessageStructure("", "./images/gemini.svg", true);
+    div.innerHTML = getMessageStructure("", "./images/gemini.svg");
     chatContainer.appendChild(div);
 
     const messageActions = div.querySelector(".message-actions");
@@ -118,10 +118,8 @@ const typeChatbotResponse = (chatbotResponse) => {
         if (currentWordIndex === words.length) {
             clearInterval(typingInterval);
             isGeneratingResponse = false;
-            setTimeout(() => {
-                messageActions.classList.remove("hide");
-                localStorage.setItem("chat-history", chatContainer.innerHTML);
-            }, 200);
+            messageActions.classList.remove("hide");
+            localStorage.setItem("chat-history", chatContainer.innerHTML);
         }
         autoScroll();
     }, 75);
@@ -145,7 +143,7 @@ deleteButton.addEventListener("click", () => {
 
 const loadDataFromLocalStorage = () => {
     const savedChatHistory = localStorage.getItem("chat-history");
-    const savedMode = localStorage.getItem("mode");
+    const savedMode = localStorage.getItem("mode") || "light-mode";
 
     container.className = "";
     container.classList.add(savedMode);

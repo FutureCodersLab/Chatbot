@@ -99,8 +99,8 @@ const typeChatbotResponse = (chatbotResponse) => {
         copyMessage(chatbotResponse, e.target)
     );
 
-    const volumUpButton = div.querySelector(".volume-up");
-    volumUpButton.addEventListener("click", (e) =>
+    const speakerButton = div.querySelector(".volume-up");
+    speakerButton.addEventListener("click", (e) =>
         readMessage(chatbotResponse, e.target)
     );
 

@@ -5,7 +5,7 @@
     --title: linear-gradient(to right, #4285f4, #d96570);
 }
 
-.dark-mode {
+.dark_mode {
     --primary: #242424;
     --secondary: #383838;
     --tertiary: #444;
@@ -15,7 +15,7 @@
     --loading: linear-gradient(to right, #4285f4, #242424, #4285f4);
 }
 
-.light-mode {
+.light_mode {
     --primary: #fff;
     --secondary: #e9eef6;
     --tertiary: #dbe1ea;
@@ -26,8 +26,8 @@
 }
 
 body {
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
     font-family: var(--font-family);
 }
@@ -37,21 +37,20 @@ body {
     align-items: center;
     flex-direction: column;
     min-height: 100vh;
-    min-width: 100vw;
-    overflow-y: scroll;
+    width: 100vw;
     background-color: var(--primary);
-    transition: 0.3s ease all;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 header {
     display: flex;
-    justify-content: center;
     align-items: center;
     flex-direction: column;
     margin-top: 50px;
 }
 
-header.hide {
+header.hidden {
     display: none;
 }
 
@@ -72,6 +71,79 @@ header p {
     color: var(--subtitle);
 }
 
+.actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--primary);
+}
+
+form {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 55px;
+}
+
+form input {
+    all: unset;
+    color: var(--text);
+    background-color: var(--secondary);
+    height: 100%;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 65px;
+    border-radius: 50px;
+    transition: 0.3s ease background-color;
+}
+
+form input:focus {
+    background-color: var(--tertiary);
+}
+
+#send-message {
+    all: unset;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    right: 20px;
+    color: var(--text);
+    cursor: pointer;
+    transform: scale(0);
+    transition: 0.1s ease transform;
+}
+
+form input:valid ~ #send-message {
+    transform: scale(1);
+}
+
+#mode,
+#delete {
+    background-color: var(--secondary);
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.3s ease background-color;
+}
+
+#mode:hover,
+#delete:hover {
+    background-color: var(--tertiary);
+}
+
 .chat-container {
     width: 100%;
     padding: 30px 15px 100px;
@@ -88,6 +160,11 @@ header p {
     flex-direction: column;
     gap: 5px;
     margin: 0 20px;
+    animation: fadeIn 0.4s ease;
+}
+
+.message.loading {
+    animation: fadeIn 0.4s ease 0.5s both;
 }
 
 .message .message-content {
@@ -108,20 +185,20 @@ header p {
 }
 
 .message .message-actions {
+    margin-left: 50px;
     display: flex;
     align-items: center;
     flex-direction: row;
     gap: 10px;
-    margin-left: 50px;
     opacity: 1;
     pointer-events: all;
     transition: 0.3s ease all;
 }
 
-.message-actions.hide {
+.message-actions.hidden {
     opacity: 0;
-    pointer-events: none;
     height: 0;
+    pointer-events: none;
 }
 
 .message .volume-up,
@@ -163,82 +240,15 @@ header p {
     width: 70%;
 }
 
-.actions {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    gap: 10px;
-    background-color: var(--primary);
-}
-
-form {
-    flex: 1;
-}
-
-.input-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 55px;
-}
-
-.input-container input {
-    all: unset;
-    color: var(--text);
-    background-color: var(--secondary);
-    height: 100%;
-    width: 100%;
-    padding-left: 20px;
-    padding-right: 65px;
-    border-radius: 50px;
-    transition: 0.3s ease background-color;
-}
-
-.input-container input:focus {
-    background-color: var(--tertiary);
-}
-
-#send-message {
-    all: unset;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    right: 20px;
-    color: var(--text);
-    cursor: pointer;
-    transform: scale(0);
-    transition: 0.1s ease transform;
-}
-
-.input-container input:valid ~ #send-message {
-    transform: scale(1);
-}
-
-#mode,
-#delete {
-    background-color: var(--secondary);
-    height: 55px;
-    width: 55px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--text);
-    cursor: pointer;
-    transition: 0.3s ease background-color;
-}
-
-#mode:hover,
-#delete:hover {
-    background-color: var(--tertiary);
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes loading {

@@ -1,10 +1,13 @@
-import { CONFIG } from "./config.js";
-import { getMessageStructure, loadingStructure } from "./structures.js";
-
-const API_KEY = CONFIG.API_KEY.join("");
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-let isGeneratingResponse = false;
+import { getGeminiResponse } from "./api.js";
+import {
+    contentCopyText,
+    darkModeText,
+    doneText,
+    lightModeText,
+    volumeOffText,
+    volumeUpText,
+} from "./icons.js";
+import { getLoadingStructure, getMessageStructure } from "./structures.js";
 
 const form = document.querySelector("form");
 const input = document.querySelector("input");
@@ -15,162 +18,137 @@ const modeButton = document.querySelector("#mode");
 const container = document.querySelector("#container");
 const deleteButton = document.querySelector("#delete");
 
+let isGeneratingResponse = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     loadDataFromLocalStorage();
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const message = input.value.trim();
 
-        if (!message || isGeneratingResponse) return;
+    form.addEventListener("submit", submitForm);
 
-        sendMessage(message);
-        setTimeout(respondLoadingMessage, 500);
-        const chatbotResponse = await generateResponse(message);
-        typeChatbotResponse(chatbotResponse);
-    });
+    modeButton.addEventListener("click", toggleMode);
+
+    deleteButton.addEventListener("click", deleteChatHistory);
 });
+
+const submitForm = async (e) => {
+    e.preventDefault();
+
+    const message = input.value.trim();
+    form.reset();
+
+    if (!message || isGeneratingResponse) return;
+
+    sendMessage(message);
+    respondLoadingMessage();
+    const chatbotResponse = await getGeminiResponse(message);
+    chatContainer.removeChild(chatContainer.lastChild);
+    respondChatbotMessage(chatbotResponse);
+};
 
 const sendMessage = (message) => {
     isGeneratingResponse = true;
-
-    header.classList.add("hide");
+    header.classList.add("hidden");
 
     const div = document.createElement("div");
     div.className = "message";
-    div.innerHTML = getMessageStructure(message, "./images/naruto.jpg");
-
+    div.innerHTML = getMessageStructure(message, "./images/naruto.jpg", true);
     chatContainer.appendChild(div);
-
-    input.value = "";
-
     autoScroll();
 };
 
 const respondLoadingMessage = () => {
     const div = document.createElement("div");
-    div.className = "message";
-    div.innerHTML = loadingStructure;
+    div.className = "message loading";
 
+    div.innerHTML = getLoadingStructure();
     chatContainer.appendChild(div);
-
     autoScroll();
 };
 
-const generateResponse = async (message) => {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        role: "user",
-                        parts: [{ text: message }],
-                    },
-                ],
-            }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error.message);
-        return data?.candidates[0].content.parts[0].text.replace(
-            /\*\*(.*?)\*\*/g,
-            "$1"
-        );
-    } catch (error) {
-        alert(error.message);
-    } finally {
-        isGeneratingResponse = false;
-        chatContainer.removeChild(chatContainer.lastChild);
-    }
-};
-
-const typeChatbotResponse = (chatbotResponse) => {
-    const words = chatbotResponse.split(" ");
-
+const respondChatbotMessage = (chatbotResponse) => {
     const div = document.createElement("div");
     div.className = "message";
-    div.innerHTML = getMessageStructure("", "./images/gemini.svg");
-    chatContainer.appendChild(div);
 
-    const messageActions = div.querySelector(".message-actions");
+    div.innerHTML = getMessageStructure(chatbotResponse, "./images/gemini.svg");
 
     const copyButton = div.querySelector(".copy");
-    copyButton.addEventListener("click", (e) =>
-        copyMessage(chatbotResponse, e.target)
-    );
+    copyButton.addEventListener("click", (e) => {
+        copyMessage(chatbotResponse, e.target);
+    });
 
     const speakerButton = div.querySelector(".volume-up");
-    speakerButton.addEventListener("click", (e) =>
-        readMessage(chatbotResponse, e.target)
-    );
+    speakerButton.addEventListener("click", (e) => {
+        readMessage(chatbotResponse, e.target);
+    });
 
-    const textElement = div.querySelector("span");
+    chatContainer.appendChild(div);
 
-    let currentWordIndex = 0;
+    isGeneratingResponse = false;
 
-    const typingInterval = setInterval(() => {
-        if (currentWordIndex === 0) {
-            textElement.innerText += words[currentWordIndex];
-        } else {
-            textElement.innerText += " " + words[currentWordIndex];
-        }
-        currentWordIndex++;
-        if (currentWordIndex === words.length) {
-            clearInterval(typingInterval);
-            isGeneratingResponse = false;
-            messageActions.classList.remove("hide");
-            localStorage.setItem("chat-history", chatContainer.innerHTML);
-        }
-        autoScroll();
-    }, 75);
-};
-
-modeButton.addEventListener("click", () => {
-    const isLightMode = container.classList.toggle("light-mode");
-
-    container.classList.toggle("dark-mode", !isLightMode);
-    mode.innerText = isLightMode ? "dark_mode" : "light_mode";
-
-    localStorage.setItem("mode", isLightMode ? "light-mode" : "dark-mode");
-});
-
-deleteButton.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all your chats?")) {
-        localStorage.removeItem("chat-history");
-        loadDataFromLocalStorage();
-    }
-});
-
-const loadDataFromLocalStorage = () => {
-    const savedChatHistory = localStorage.getItem("chat-history");
-    const savedMode = localStorage.getItem("mode") || "light-mode";
-
-    container.className = "";
-    container.classList.add(savedMode);
-    mode.innerText = savedMode === "light-mode" ? "dark_mode" : "light_mode";
-
-    chatContainer.innerHTML = savedChatHistory || "";
-    header.classList.toggle("hide", savedChatHistory);
+    localStorage.setItem("chat-history", chatContainer.innerHTML);
 
     autoScroll();
 };
 
 const copyMessage = (message, target) => {
     navigator.clipboard.writeText(message);
-    target.innerText = "done";
-    setTimeout(() => (target.innerText = "content_copy"), 1500);
+
+    target.innerText = doneText;
+    setTimeout(() => {
+        target.innerText = contentCopyText;
+    }, 1500);
 };
 
 const readMessage = (message, target) => {
     if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
-        target.innerText = "volume_up";
+        target.innerText = volumeUpText;
     } else {
         const utterance = new SpeechSynthesisUtterance(message);
-        utterance.onend = () => (target.innerText = "volume_up");
         window.speechSynthesis.speak(utterance);
-        target.innerText = "volume_off";
+        target.innerText = volumeOffText;
+        utterance.onend = () => {
+            target.innerText = volumeUpText;
+        };
     }
 };
 
-const autoScroll = () => scrollTarget.scrollIntoView({ behavior: "smooth" });
+const deleteChatHistory = () => {
+    if (confirm("Are you sure you want to delete all your chats?")) {
+        localStorage.removeItem("chat-history");
+        loadDataFromLocalStorage();
+    }
+};
+
+const toggleMode = () => {
+    const isLightMode = container.classList.contains(lightModeText);
+
+    const currentMode = isLightMode ? darkModeText : lightModeText;
+    container.className = currentMode;
+
+    const nextMode = isLightMode ? lightModeText : darkModeText;
+    modeButton.innerText = nextMode;
+
+    localStorage.setItem("mode", currentMode);
+};
+
+const loadDataFromLocalStorage = () => {
+    const savedChatHistory = localStorage.getItem("chat-history");
+    const savedMode = localStorage.getItem("mode");
+
+    const currentMode = savedMode || lightModeText;
+    const nextMode =
+        currentMode === lightModeText ? darkModeText : lightModeText;
+
+    container.className = currentMode;
+    modeButton.innerText = nextMode;
+
+    chatContainer.innerHTML = savedChatHistory || "";
+    header.classList.toggle("hidden", savedChatHistory);
+
+    autoScroll();
+};
+
+const autoScroll = () => {
+    scrollTarget.scrollIntoView({ behavior: "smooth" });
+};

@@ -35,7 +35,7 @@ const sendMessage = (message) => {
 
 const respondLoadingMessage = () => {
     const div = document.createElement("div");
-    div.className = "message";
+    div.className = "message loading";
 
     div.innerHTML = getLoadingStructure();
     chatContainer.appendChild(div);

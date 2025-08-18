@@ -1,3 +1,12 @@
+export const darkModeText = "dark_mode";
+export const lightModeText = "light_mode";
+
+export const contentCopyText = "content_copy";
+export const doneText = "done";
+
+export const volumeUpText = "volume_up";
+export const volumeOffText = "volume_off";
+
 export const sendIcon = `
     <span class="material-symbols-rounded">send</span>
 `;

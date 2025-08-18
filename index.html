@@ -12,24 +12,18 @@
         <script type="module" src="./script.js" defer></script>
     </head>
     <body>
-        <div id="container" class="light-mode">
+        <div id="container" class="light_mode">
             <header>
                 <h1>Hello, there</h1>
                 <p>How can I help you today?</p>
             </header>
-
-            <div class="chat-container">
-                <div class="message"></div>
-            </div>
-
+            <div class="chat-container"></div>
             <div class="actions">
                 <form>
-                    <div class="input-container">
-                        <input placeholder="Enter a prompt here" required />
-                        <button type="submit" id="send-message">
-                            <span class="material-symbols-rounded">send</span>
-                        </button>
-                    </div>
+                    <input placeholder="Enter a prompt here" required />
+                    <button type="submit" id="send-message">
+                        <span class="material-symbols-rounded">send</span>
+                    </button>
                 </form>
                 <span id="mode" class="material-symbols-rounded"
                     >light_mode</span

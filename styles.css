@@ -5,7 +5,7 @@
     --title: linear-gradient(to right, #4285f4, #d96570);
 }
 
-.dark-mode {
+.dark_mode {
     --primary: #242424;
     --secondary: #383838;
     --tertiary: #444;
@@ -15,7 +15,7 @@
     --loading: linear-gradient(to right, #4285f4, #242424, #4285f4);
 }
 
-.light-mode {
+.light_mode {
     --primary: #fff;
     --secondary: #e9eef6;
     --tertiary: #dbe1ea;
@@ -36,9 +36,11 @@ body {
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     background-color: var(--primary);
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 header {
@@ -48,7 +50,7 @@ header {
     margin-top: 50px;
 }
 
-header.hide {
+header.hidden {
     display: none;
 }
 
@@ -84,9 +86,6 @@ header p {
 
 form {
     flex: 1;
-}
-
-.input-container {
     position: relative;
     display: flex;
     justify-content: center;
@@ -94,7 +93,7 @@ form {
     height: 55px;
 }
 
-.input-container input {
+form input {
     all: unset;
     color: var(--text);
     background-color: var(--secondary);
@@ -106,7 +105,7 @@ form {
     transition: 0.3s ease background-color;
 }
 
-.input-container input:focus {
+form input:focus {
     background-color: var(--tertiary);
 }
 
@@ -122,7 +121,7 @@ form {
     transition: 0.1s ease transform;
 }
 
-.input-container input:valid ~ #send-message {
+form input:valid ~ #send-message {
     transform: scale(1);
 }
 
@@ -144,6 +143,7 @@ form {
 #delete:hover {
     background-color: var(--tertiary);
 }
+
 .chat-container {
     width: 100%;
     padding: 30px 15px 100px;
@@ -160,6 +160,8 @@ form {
     flex-direction: column;
     gap: 5px;
     margin: 0 20px;
+    animation: fadeIn 0.4s ease-out;
+    animation-delay: 0.2s;
 }
 
 .message .message-content {
@@ -174,6 +176,7 @@ form {
     border-radius: 50%;
     align-self: flex-start;
 }
+
 .message .message-content span {
     color: var(--text);
 }
@@ -189,10 +192,10 @@ form {
     transition: 0.3s ease all;
 }
 
-.message-actions.hide {
+.message-actions.hidden {
     opacity: 0;
-    pointer-events: none;
     height: 0;
+    pointer-events: none;
 }
 
 .message .volume-up,
@@ -228,10 +231,22 @@ form {
     width: 100%;
     border-radius: 10px;
     animation: loading 3s linear infinite;
+    animation-delay: 0.5s;
 }
 
 .message .loading-indicator .loading-bar:last-child {
     width: 70%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes loading {

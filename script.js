@@ -126,7 +126,8 @@ const toggleMode = () => {
     const newMode = isLightMode ? darkModeText : lightModeText;
     container.className = newMode;
 
-    const nextIcon = isLightMode ? lightModeText : darkModeText;
+    const nextIcon = newMode === lightModeText ? darkModeText : lightModeText;
+
     modeButton.innerText = nextIcon;
 
     localStorage.setItem("mode", newMode);

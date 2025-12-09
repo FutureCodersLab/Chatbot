@@ -123,13 +123,14 @@ const deleteChatHistory = () => {
 const toggleMode = () => {
     const isLightMode = container.classList.contains(lightModeText);
 
-    const currentMode = isLightMode ? darkModeText : lightModeText;
-    container.className = currentMode;
+    const newMode = isLightMode ? darkModeText : lightModeText;
+    container.className = newMode;
 
-    const nextMode = isLightMode ? lightModeText : darkModeText;
-    modeButton.innerText = nextMode;
+    const nextIcon = newMode === lightModeText ? darkModeText : lightModeText;
 
-    localStorage.setItem("mode", currentMode);
+    modeButton.textContent = nextIcon;
+
+    localStorage.setItem("mode", newMode);
 };
 
 const loadDataFromLocalStorage = () => {
@@ -137,11 +138,11 @@ const loadDataFromLocalStorage = () => {
     const savedMode = localStorage.getItem("mode");
 
     const currentMode = savedMode || lightModeText;
-    const nextMode =
+    const currentIcon =
         currentMode === lightModeText ? darkModeText : lightModeText;
 
     container.className = currentMode;
-    modeButton.innerText = nextMode;
+    modeButton.textContent = currentIcon;
 
     chatContainer.innerHTML = savedChatHistory || "";
     header.classList.toggle("hidden", savedChatHistory);

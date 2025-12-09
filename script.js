@@ -128,7 +128,7 @@ const toggleMode = () => {
 
     const nextIcon = newMode === lightModeText ? darkModeText : lightModeText;
 
-    modeButton.innerText = nextIcon;
+    modeButton.textContent = nextIcon;
 
     localStorage.setItem("mode", newMode);
 };
@@ -142,7 +142,7 @@ const loadDataFromLocalStorage = () => {
         currentMode === lightModeText ? darkModeText : lightModeText;
 
     container.className = currentMode;
-    modeButton.innerText = currentIcon;
+    modeButton.textContent = currentIcon;
 
     chatContainer.innerHTML = savedChatHistory || "";
     header.classList.toggle("hidden", savedChatHistory);

@@ -1,9 +1,9 @@
 const CONFIG = {
-    API_KEY: ["AIzaSyAJBb", "scowBKi4SUYIOn4", "2bZbJ9PhysylNw"],
+    API_KEY: ["AIzaSyCfO6_", "y7PGkU99S5C3q6", "3yXr8oe-do-O1o"],
 };
 
 const API_KEY = CONFIG.API_KEY.join("");
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
 export const getGeminiResponse = async (message) => {
     try {
